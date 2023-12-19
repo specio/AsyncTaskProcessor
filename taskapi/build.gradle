@@ -39,6 +39,9 @@ dependencies {
 	implementation "org.mapstruct:mapstruct:${mapstructVersion}"
 	compileOnly "org.mapstruct:mapstruct-processor:${mapstructVersion}"
 	annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
+	testImplementation 'org.testcontainers:junit-jupiter'
+	testImplementation 'org.testcontainers:kafka'
+	testImplementation 'org.testcontainers:mysql'
 	testImplementation "org.mockito:mockito-core:3.+"
 	testImplementation 'org.projectlombok:lombok'
 	testAnnotationProcessor 'org.projectlombok:lombok'

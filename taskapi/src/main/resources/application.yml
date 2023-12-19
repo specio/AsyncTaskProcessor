@@ -1,2 +1,6 @@
 server:
   port: 8080
+
+ksqldb:
+  host: localhost
+  port: 8088

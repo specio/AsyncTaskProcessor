@@ -2,6 +2,7 @@ package com.github.specio.taskprocessor.taskapi.utils;
 
 import com.github.specio.taskprocessor.taskapi.dto.TaskDto;
 import com.github.specio.taskprocessor.taskapi.dto.TaskParamsDto;
+import io.confluent.ksql.GenericRow;
 import lombok.Setter;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;

@@ -22,15 +22,15 @@ class TaskMapperTests {
     void taskMappedToDto() {
         UUID id = UUID.randomUUID();
         int progress = 1;
-        int offset = 2;
+        int position = 2;
         int typos = 3;
         Row input = Mockito.mock(Row.class);
         when(input.getString("TASK_ID")).thenReturn(id.toString());
         when(input.getInteger("PROGRESS")).thenReturn(progress);
-        when(input.getInteger("OFFSET")).thenReturn(offset);
+        when(input.getInteger("OFFSET")).thenReturn(position);
         when(input.getInteger("TYPOS")).thenReturn(typos);
 
-        TaskDto expectedOutput = new TaskDto(id, progress, new TaskResultDto(offset, typos));
+        TaskDto expectedOutput = new TaskDto(id, progress, new TaskResultDto(position, typos));
         TaskDto output = sut.taskToDTO(input);
         assertEquals(expectedOutput, output);
     }
