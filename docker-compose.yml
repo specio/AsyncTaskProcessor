@@ -49,3 +49,11 @@ services:
       - ksqldb-server
     entrypoint: /bin/sh
     tty: true
+
+  task-api:
+    build: .
+    ports:
+      - "8080:8080"
+    network_mode: host
+    depends_on:
+      - redis

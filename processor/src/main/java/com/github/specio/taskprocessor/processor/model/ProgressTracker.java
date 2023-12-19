@@ -1,7 +1,7 @@
 package com.github.specio.taskprocessor.processor.model;
 
-import com.github.specio.taskprocessor.processor.dto.TaskUpdateDto;
-import com.github.specio.taskprocessor.processor.mapper.StatusMapper;
+import com.github.specio.taskprocessor.processor.dto.TaskProgressDto;
+import com.github.specio.taskprocessor.processor.mapper.TaskProgressMapper;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -16,9 +16,9 @@ import java.util.UUID;
 @Slf4j
 @RequiredArgsConstructor
 @Getter
-public class StatusReporter {
-    private final KafkaTemplate<String, TaskUpdateDto> kafkaTemplate;
-    private final StatusMapper mapper;
+public class ProgressTracker {
+    private final KafkaTemplate<String, TaskProgressDto> kafkaTemplate;
+    private final TaskProgressMapper mapper;
     private final UUID taskId;
     @Setter
     private int totalSteps;
@@ -47,7 +47,7 @@ public class StatusReporter {
 
     private void setPercentProgress(int progress) {
         this.progress = progress;
-        this.timestamp  =  new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date.from(Instant.now()));
+        this.timestamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date.from(Instant.now()));
         kafkaTemplate.send("updates", taskId.toString(), mapper.statusToTaskUpdate(this));
     }
 

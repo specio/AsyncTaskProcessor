@@ -1,7 +1,7 @@
 package com.github.specio.taskprocessor.processor.solver;
 
 import com.github.specio.taskprocessor.processor.exception.InvalidInputDataException;
-import com.github.specio.taskprocessor.processor.model.StatusReporter;
+import com.github.specio.taskprocessor.processor.model.ProgressTracker;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -9,16 +9,16 @@ import org.apache.commons.lang3.StringUtils;
 @Slf4j
 @RequiredArgsConstructor
 public class PatternTypoSolver{
-    private final StatusReporter statusReporter;
+    private final ProgressTracker progressTracker;
     private final String input;
     private final String pattern;
 
-    public static void solveTask(StatusReporter statusReporter, String input, String pattern) throws InterruptedException {
-        PatternTypoSolver solver = new PatternTypoSolver(statusReporter,input,pattern);
+    public static void solveTask(ProgressTracker progressTracker, String input, String pattern) throws InterruptedException {
+        PatternTypoSolver solver = new PatternTypoSolver(progressTracker,input,pattern);
         solver.solve();
     }
     private void solve() throws InterruptedException {
-        HammingDistance hammingDistance = new HammingDistance(statusReporter, pattern, input);
+        HammingDistance hammingDistance = new HammingDistance(progressTracker, pattern, input);
 
             int typos = Integer.MAX_VALUE;
             int position = -1;
@@ -32,15 +32,12 @@ public class PatternTypoSolver{
                     if (typos == 0) break;
                 }
             }
-            statusReporter.complete(position,typos);
-    }
-
-    public static void sanitizeInputData(String input, String pattern) throws InvalidInputDataException {
-        if (StringUtils.isAnyBlank(input, pattern))
-            throw new InvalidInputDataException("Passed null parameter");
+            progressTracker.complete(position,typos);
     }
 
     public static void verifyInputData(String input, String pattern) throws InvalidInputDataException {
+        if (StringUtils.isAnyBlank(input, pattern))
+            throw new InvalidInputDataException("Passed null parameter");
         if (pattern.length() > input.length())
             throw new InvalidInputDataException("Pattern is longer than input");
     }

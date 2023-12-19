@@ -1,8 +1,8 @@
 package com.github.specio.taskprocessor.processor.solver;
 
-import com.github.specio.taskprocessor.processor.dto.TaskUpdateDto;
+import com.github.specio.taskprocessor.processor.dto.TaskProgressDto;
 import com.github.specio.taskprocessor.processor.exception.InvalidInputDataException;
-import com.github.specio.taskprocessor.processor.model.StatusReporter;
+import com.github.specio.taskprocessor.processor.model.ProgressTracker;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -12,11 +12,9 @@ import org.springframework.kafka.core.KafkaTemplate;
 
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 
@@ -26,16 +24,16 @@ public class PatternTypoSolverTests {
     private TaskParams params;
 
     @MockBean
-    private KafkaTemplate<String, TaskUpdateDto> kafkaTemplate;
+    private KafkaTemplate<String, TaskProgressDto> kafkaTemplate;
 
     @MockBean
-    private StatusReporter statusReporter;
+    private ProgressTracker progressTracker;
 
     @ParameterizedTest
     @MethodSource
     public void testSolverInputPositive(TaskParams params, int expectedPosition, int excpectedTypos) throws InterruptedException {
-        PatternTypoSolver.solveTask(statusReporter, params.input(), params.pattern());
-        verify(statusReporter).complete(expectedPosition, excpectedTypos);
+        PatternTypoSolver.solveTask(progressTracker, params.input(), params.pattern());
+        verify(progressTracker).complete(expectedPosition, excpectedTypos);
     }
 
     private static Stream<Arguments> testSolverInputPositive() {
@@ -48,13 +46,12 @@ public class PatternTypoSolverTests {
         );
     }
 
-
     @ParameterizedTest
     @MethodSource
     public void testSolverInputNullOrEmptyNegative(TaskParams params) {
         assertThrows(
                 InvalidInputDataException.class,
-                () -> PatternTypoSolver.sanitizeInputData(params.input(), params.pattern()));
+                () -> PatternTypoSolver.verifyInputData(params.input(), params.pattern()));
     }
 
     private static Stream<Arguments> testSolverInputNullOrEmptyNegative() {

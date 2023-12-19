@@ -15,7 +15,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class TaskUpdateDto {
+public class TaskProgressDto {
 
     @JsonProperty(value = "TASK_ID")
     private UUID taskId;

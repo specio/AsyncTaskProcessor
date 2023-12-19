@@ -1,7 +1,7 @@
 package com.github.specio.taskprocessor.processor.solver;
 
-import com.github.specio.taskprocessor.processor.dto.TaskUpdateDto;
-import com.github.specio.taskprocessor.processor.model.StatusReporter;
+import com.github.specio.taskprocessor.processor.dto.TaskProgressDto;
+import com.github.specio.taskprocessor.processor.model.ProgressTracker;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -14,7 +14,6 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 
@@ -23,12 +22,11 @@ public class HammingDistanceTests {
 
     private TaskParams params;
 
+    @MockBean
+    private KafkaTemplate<String, TaskProgressDto> kafkaTemplate;
 
     @MockBean
-    private KafkaTemplate<String, TaskUpdateDto> kafkaTemplate;
-
-    @MockBean
-    private StatusReporter statusReporter;
+    private ProgressTracker progressTracker;
 
     @BeforeEach
     public void init() {
@@ -39,11 +37,11 @@ public class HammingDistanceTests {
     @MethodSource
     public void testCalculateUntilReachesLimit(int offset, int limit, int expectedDistance) throws InterruptedException {
 
-        HammingDistance hammingDistance = new HammingDistance(statusReporter, params.pattern(), params.input());
+        HammingDistance hammingDistance = new HammingDistance(progressTracker, params.pattern(), params.input());
         assertEquals(expectedDistance, hammingDistance.calculateUntilReachesLimit(offset, limit));
 
-        int expectedStatusUpdateCount = Math.min(limit,params.pattern().length());
-        verify(statusReporter, times(expectedStatusUpdateCount)).setCurrentProgress(anyInt());
+        int expectedStatusUpdateCount = Math.min(limit, params.pattern().length());
+        verify(progressTracker, times(expectedStatusUpdateCount)).setCurrentProgress(anyInt());
     }
 
     private static Stream<Arguments> testCalculateUntilReachesLimit() {

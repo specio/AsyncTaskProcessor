@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/processor/AsyncTaskProcessor.processor.main.iml" filepath="$PROJECT_DIR$/.idea/modules/processor/AsyncTaskProcessor.processor.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/processor/AsyncTaskProcessor.processor.test.iml" filepath="$PROJECT_DIR$/.idea/modules/processor/AsyncTaskProcessor.processor.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/taskapi/AsyncTaskProcessor.taskapi.main.iml" filepath="$PROJECT_DIR$/.idea/modules/taskapi/AsyncTaskProcessor.taskapi.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/taskapi/AsyncTaskProcessor.taskapi.test.iml" filepath="$PROJECT_DIR$/.idea/modules/taskapi/AsyncTaskProcessor.taskapi.test.iml" />
+    </modules>
+  </component>
+</project>

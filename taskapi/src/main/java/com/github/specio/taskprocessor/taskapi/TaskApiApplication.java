@@ -7,10 +7,10 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
 @SpringBootApplication
-public class SolverApplication {
+public class TaskApiApplication {
 
 	public static void main(String[] args) throws ExecutionException, InterruptedException, TimeoutException {
-		SpringApplication.run(SolverApplication.class, args);
+		SpringApplication.run(TaskApiApplication.class, args);
 	}
 
 }

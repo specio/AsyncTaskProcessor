@@ -22,6 +22,7 @@ public class TaskController {
     private final TaskService taskService;
 
     @GetMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
     public TaskDto getTask(@PathVariable("id") UUID id) throws InterruptedException, ExecutionException, TimeoutException {
         return taskService.getTask(id);
     }
@@ -33,6 +34,7 @@ public class TaskController {
     }
 
     @PostMapping
+    @ResponseStatus(HttpStatus.OK)
     public UUID scheduleTask(@Valid @RequestBody TaskParamsDto taskParamsDto) {
         return taskService.scheduleTask(taskParamsDto);
     }
