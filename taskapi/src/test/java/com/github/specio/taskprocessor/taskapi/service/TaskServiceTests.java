@@ -1,9 +1,9 @@
 package com.github.specio.taskprocessor.taskapi.service;
 
+import com.github.specio.taskprocessor.taskapi.utils.TaskApiUtils;
 import com.github.specio.taskprocessor.taskapi.dto.TaskParamsDto;
 import com.github.specio.taskprocessor.taskapi.ksql.KsqlConnector;
 import com.github.specio.taskprocessor.taskapi.ksql.TaskTopic;
-import com.github.specio.taskprocessor.taskapi.utils.TaskApiUtils;
 import io.confluent.ksql.api.client.KsqlObject;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,6 +17,7 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -37,7 +38,7 @@ class TaskServiceTests {
     private final TaskApiUtils utils = new TaskApiUtils();
 
     @BeforeEach
-    void init() {
+    void init(){
         utils.setPort(port);
     }
 

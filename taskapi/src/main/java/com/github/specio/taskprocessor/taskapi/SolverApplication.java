@@ -9,8 +9,8 @@ import java.util.concurrent.TimeoutException;
 @SpringBootApplication
 public class SolverApplication {
 
-    public static void main(String[] args) throws ExecutionException, InterruptedException, TimeoutException {
-        SpringApplication.run(SolverApplication.class, args);
-    }
+	public static void main(String[] args) throws ExecutionException, InterruptedException, TimeoutException {
+		SpringApplication.run(SolverApplication.class, args);
+	}
 
 }
