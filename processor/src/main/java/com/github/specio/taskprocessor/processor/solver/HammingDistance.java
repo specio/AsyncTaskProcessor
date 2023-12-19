@@ -2,7 +2,6 @@ package com.github.specio.taskprocessor.processor.solver;
 
 
 import com.github.specio.taskprocessor.processor.model.StatusReporter;
-import org.apache.commons.lang3.NotImplementedException;
 
 class HammingDistance {
     private final String pattern;
@@ -12,12 +11,14 @@ class HammingDistance {
     /**
      * Creates hamming distance instance
      *
-     * @param statusReporter Status instance to report progress
-     * @param pattern        First string to compare
-     * @param input          Second string to compare (at least of patter size)
+     * @param statusReporter   Status instance to report progress
+     * @param pattern  First string to compare
+     * @param input    Second string to compare (at least of patter size)
      */
     public HammingDistance(StatusReporter statusReporter, String pattern, String input) {
-        throw new NotImplementedException();
+        this.pattern = pattern;
+        this.input = input;
+        this.statusReporter = statusReporter;
     }
 
 
@@ -31,6 +32,13 @@ class HammingDistance {
      * @return hamming distance, trimmed do limit if reached first
      */
     public int calculateUntilReachesLimit(int offset, int limit) throws InterruptedException {
-        throw new NotImplementedException();
+        int current_distance = 0;
+        for (int j = 0; j < pattern.length(); j++) {
+            if (input.charAt(offset + j) != pattern.charAt(j)) current_distance++;
+            statusReporter.setCurrentProgress((offset * pattern.length() + j));
+            if (current_distance >= limit) break;
+            Thread.sleep(100);
+        }
+        return current_distance;
     }
 }

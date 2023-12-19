@@ -6,9 +6,11 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.kafka.core.KafkaTemplate;
 
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.util.Date;
 import java.util.UUID;
 
 @Slf4j
@@ -23,15 +25,20 @@ public class StatusReporter {
 
     private String timestamp;
     private int progress;
-    private final Integer offset = null;
-    private final Integer typos = null;
+    private Integer offset = null;
+    private Integer typos = null;
 
     public void complete(int offset, int typos) {
-        throw new NotImplementedException();
+        this.offset = offset;
+        this.typos = typos;
+        setPercentProgress(100);
     }
 
     public void failed(String message) {
-        throw new NotImplementedException();
+        this.offset = -1;
+        this.typos = -1;
+        setPercentProgress(100);
+        log.error("FAILED: ({}) - {}", taskId, message);
     }
 
     public void setCurrentProgress(int progressStep) {
@@ -39,7 +46,9 @@ public class StatusReporter {
     }
 
     private void setPercentProgress(int progress) {
-        throw new NotImplementedException();
+        this.progress = progress;
+        this.timestamp  =  new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date.from(Instant.now()));
+        kafkaTemplate.send("updates", taskId.toString(), mapper.statusToTaskUpdate(this));
     }
 
 }
