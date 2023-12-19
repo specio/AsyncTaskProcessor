@@ -1,0 +1,1 @@
+winpty docker exec -it kafka-ksqldb-cli-1 ksql http://ksqldb-server:8088
