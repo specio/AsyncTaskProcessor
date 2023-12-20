@@ -12,11 +12,11 @@ using KsqlDB and Kafka to process async requests.
 ```
 Build process involve downloading and starting a cluster so it might take a few minutes to start.
 \
-Please read: [Monitoring](###Monitoring) to make sure that all required services are up
+Please read: [Monitoring](#Monitoring) to make sure that all required services are up
 \
 (TaskApi Service, Processor Service, KsqlDB, Kafka Broker and Zookeeper) 
 \
-For more details read OpenAPI documentation
+For more details read [OpenAPI](#OpenAPI) documentation
 
 2. Schedule task:
 ```bash
@@ -75,7 +75,7 @@ spring:
       concurrency: 3
 ```
 
-#### OpenAPI (Swagger)
+#### OpenAPI
 
 OpenAPI documentation is accessible via:
 `http://localhost:8080/swagger-ui/index.html`.
