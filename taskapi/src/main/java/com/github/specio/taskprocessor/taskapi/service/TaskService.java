@@ -4,7 +4,7 @@ import com.github.specio.taskprocessor.taskapi.dto.TaskDto;
 import com.github.specio.taskprocessor.taskapi.dto.TaskParamsDto;
 import com.github.specio.taskprocessor.taskapi.exception.TaskNotFoundException;
 import com.github.specio.taskprocessor.taskapi.ksql.KsqlConnector;
-import com.github.specio.taskprocessor.taskapi.ksql.TaskTopic;
+import com.github.specio.taskprocessor.taskapi.ksql.topics.TaskTopic;
 import com.github.specio.taskprocessor.taskapi.mapper.TaskMapper;
 import com.github.specio.taskprocessor.taskapi.mapper.TaskRequestMapper;
 import io.confluent.ksql.api.client.KsqlObject;

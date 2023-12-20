@@ -4,3 +4,74 @@ server:
 ksqldb:
   host: localhost
   port: 8088
+
+spring:
+  kafka:
+    task-queue-partitions: 10
+
+api:
+  common:
+    version: 1.0.0
+    title: AsyncTaskProcessor
+    description: Finds best match position of the pattern in the input with the least number of different characters
+    termsOfService: Free to use
+    license: MIT
+    licenseUrl: https://www.mit.edu/~amini/LICENSE.md
+
+    contact:
+      name: Szczepan Pecio
+      url: https://github.com/specio
+      email: p.szczepan@gmail.com
+
+  responseCodes:
+    ok.description: OK
+    badRequest.description: Bad Request, invalid format of the request. See response message for more information
+    notFound.description: Not found, the specified id does not exist
+
+  task-api:
+    get-all:
+      description: Returns list of all tasks processed by a service
+      notes: |
+        # Normal response
+        1. Empty list - If no tasks
+        1. List of Task information
+
+    get:
+      description: Returns task for specified uuid
+      notes: |
+        ## Normal response
+        1. Task information (Completed) - Containing ID, STATE, PROGRESS [%], Result [POSITION, TYPOS]
+        ## Normal partial response
+        1. Task information (Pending)   - Containing ID, STATE, PROGRESS [%]
+        ## Expected error responses
+        1. If no task is found, a **404 - Not Found** error will be returned
+        1. If UUID is invalid, a **400 - Bad Request** error will be returned
+
+    post:
+      description: Create task for given task parameters
+
+      notes: |
+        ## Example
+        Quick:
+        `{
+          "input": "ABCDE",
+          "pattern": "CDQ"
+        }`
+        \
+        \
+        Longer running:
+        `{
+          "input": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABCDE",
+          "pattern": "CDQ"
+        }`
+        ## Normal response
+        1. Task UUID
+        ## Expected error responses
+        1. If task parameters are missing or invalid, a **400 - Bad Request** error will be returned
+
+---
+spring.config.activate.on-profile: docker
+
+ksqldb:
+  host: ksqldb-server
+  port: 8088

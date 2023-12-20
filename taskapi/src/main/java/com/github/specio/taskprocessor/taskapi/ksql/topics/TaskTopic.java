@@ -1,4 +1,4 @@
-package com.github.specio.taskprocessor.taskapi.ksql;
+package com.github.specio.taskprocessor.taskapi.ksql.topics;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

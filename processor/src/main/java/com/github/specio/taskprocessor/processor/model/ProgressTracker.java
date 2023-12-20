@@ -1,54 +1,34 @@
 package com.github.specio.taskprocessor.processor.model;
 
 import com.github.specio.taskprocessor.processor.dto.TaskProgressDto;
-import com.github.specio.taskprocessor.processor.mapper.TaskProgressMapper;
+import com.github.specio.taskprocessor.processor.processor.ProgressSender;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.kafka.core.KafkaTemplate;
 
-import java.text.SimpleDateFormat;
-import java.time.Instant;
-import java.util.Date;
 import java.util.UUID;
 
 @Slf4j
 @RequiredArgsConstructor
-@Getter
 public class ProgressTracker {
-    private final KafkaTemplate<String, TaskProgressDto> kafkaTemplate;
-    private final TaskProgressMapper mapper;
+    private final ProgressSender progressSender;
     private final UUID taskId;
-    @Setter
-    private int totalSteps;
-
-    private String timestamp;
-    private int progress;
-    private Integer offset = null;
-    private Integer typos = null;
+    private final int totalSteps;
 
     public void complete(int offset, int typos) {
-        this.offset = offset;
-        this.typos = typos;
-        setPercentProgress(100);
-    }
-
-    public void failed(String message) {
-        this.offset = -1;
-        this.typos = -1;
-        setPercentProgress(100);
-        log.error("FAILED: ({}) - {}", taskId, message);
+        send(TaskProgressDto.createCompleted(taskId, offset, typos));
     }
 
     public void setCurrentProgress(int progressStep) {
-        setPercentProgress(progressStep * 100 / totalSteps);
+        send(TaskProgressDto.createInProgress(taskId, calculateProgressPercent(progressStep)));
     }
 
-    private void setPercentProgress(int progress) {
-        this.progress = progress;
-        this.timestamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date.from(Instant.now()));
-        kafkaTemplate.send("updates", taskId.toString(), mapper.statusToTaskUpdate(this));
+    private int calculateProgressPercent(int progressStep) {
+        return progressStep * 100 / totalSteps;
     }
 
+    private void send(TaskProgressDto progressDto) {
+        progressSender.sendProgressUpdate(progressDto);
+    }
 }

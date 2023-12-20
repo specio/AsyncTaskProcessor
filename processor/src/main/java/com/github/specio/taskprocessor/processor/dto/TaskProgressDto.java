@@ -2,34 +2,37 @@ package com.github.specio.taskprocessor.processor.dto;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.util.Date;
 import java.util.UUID;
 
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class TaskProgressDto {
+@JsonNaming(PropertyNamingStrategies.UpperSnakeCaseStrategy.class)
+public record TaskProgressDto(UUID taskId,
+                              String timestamp,
+                              Integer progress,
+                              Integer offset,
+                              Integer typos) {
 
-    @JsonProperty(value = "TASK_ID")
-    private UUID taskId;
+    private static final SimpleDateFormat TIMESTAMP_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-    @JsonProperty(value = "TIMESTAMP")
-    private String timestamp;
+    public static TaskProgressDto createInProgress(UUID taskId, int progress) {
+        return new TaskProgressDto(taskId, createTimestamp(), progress, null, null);
+    }
 
-    @JsonProperty(value = "PROGRESS")
-    private int progress;
+    public static TaskProgressDto createFailed(UUID taskId) {
+        return TaskProgressDto.createCompleted(taskId, -1, -1);
+    }
 
-    @JsonProperty(value = "OFFSET")
-    private Integer offset;
+    public static TaskProgressDto createCompleted(UUID taskId, int offset, int typos) {
+        return new TaskProgressDto(taskId, createTimestamp(), 100, offset, typos);
+    }
 
-    @JsonProperty(value = "TYPOS")
-    private Integer typos;
-
+    private static String createTimestamp() {
+        return TIMESTAMP_FORMAT.format(Date.from(Instant.now()));
+    }
 }

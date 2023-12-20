@@ -85,7 +85,7 @@ class IntegrationTests {
         utils.postTask(new TaskParamsDto("CDQ", "ABCDQ"));
         Thread.sleep(500); //Wait for async task to propagate
         assertEquals(++initialAmount, utils.getAllTasks().size());
-        utils.postTask(new TaskParamsDto("CDQ", "ABCDQ"));
+        utils.postTask(new TaskParamsDto("CDQXA", "ABCAXDQ"));
         Thread.sleep(500); //Wait for async task to propagate
         assertEquals(++initialAmount, utils.getAllTasks().size());
     }

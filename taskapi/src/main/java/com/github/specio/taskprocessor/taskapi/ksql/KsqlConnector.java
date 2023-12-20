@@ -1,13 +1,20 @@
 package com.github.specio.taskprocessor.taskapi.ksql;
 
+import com.github.specio.taskprocessor.taskapi.ksql.topics.TaskTopic;
 import io.confluent.ksql.api.client.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
-import java.util.concurrent.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 @Service
 @Slf4j
@@ -27,17 +34,6 @@ public class KsqlConnector {
                 .get(10, TimeUnit.SECONDS).stream().findFirst();
     }
 
-    public List<Row> getTaskIds() {
-        String pullQuery = "SELECT TASK_ID FROM tasks;";
-        try {
-            return ksqlClient.executeQuery(pullQuery, PROPERTIES)
-                    .get(10, TimeUnit.SECONDS);
-        } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            log.info("Failed to retrieve - TIMEOUT");
-            throw new RuntimeException(e);
-        }
-    }
-
     public List<Row> getTasks() {
         String pullQuery = "SELECT * FROM tasks;";
         try {
@@ -49,27 +45,11 @@ public class KsqlConnector {
         }
     }
 
-
     public CompletableFuture<Void> insert(TaskTopic stream, KsqlObject row) {
         return ksqlClient.insertInto(stream.getStringValue(), row);
     }
 
-    public CompletableFuture<Void> insert(TaskTopic stream, Collection<KsqlObject> rows) {
-        return CompletableFuture.allOf(
-                rows.stream()
-                        .map(row -> {
-                            try {
-                                Thread.sleep(1000);
-                            } catch (InterruptedException e) {
-                                throw new RuntimeException(e);
-                            }
-                            return ksqlClient.insertInto(stream.getStringValue(), row);
-                        })
-                        .toArray(CompletableFuture[]::new)
-        );
-    }
-
-    ExecuteStatementResult executeQuery(String query) {
+    public ExecuteStatementResult executeQuery(String query) {
         try {
             ExecuteStatementResult result = ksqlClient.executeStatement(query, PROPERTIES).get();
             log.info("Result: {}", result.queryId().orElse(null));
@@ -78,6 +58,22 @@ public class KsqlConnector {
             log.error("Error: ", e);
             throw new RuntimeException(e);
         }
+    }
+
+    public void verifyConnection() {
+        Optional<ServerInfo> serverInfo = Optional.empty();
+        for (int retries = 0; retries < 30; retries++) {
+            try {
+                Thread.sleep(1000);
+                serverInfo = Optional.of(ksqlClient.serverInfo().get());
+                break;
+            } catch (ExecutionException | InterruptedException e) {
+                log.info("Reconnecting...");
+            }
+        }
+        log.info("Connected to KsqlDB: {} ", serverInfo
+                .orElseThrow(() -> new RuntimeException("KsqlDB - Unable to connect!"))
+                .toString());
     }
 
     public List<StreamInfo> listStreams() {
@@ -96,10 +92,5 @@ public class KsqlConnector {
             log.error("Error: ", e);
             throw new RuntimeException(e);
         }
-    }
-
-    public CompletableFuture<StreamedQueryResult> streamQuery(TaskTopic taskTopic) {
-        String pushQuery = "SELECT * FROM " + TaskTopic.QUEUE + " EMIT CHANGES;";
-        return ksqlClient.streamQuery(pushQuery, PROPERTIES);
     }
 }

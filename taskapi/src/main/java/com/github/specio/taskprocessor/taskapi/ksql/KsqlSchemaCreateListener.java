@@ -1,13 +1,16 @@
 package com.github.specio.taskprocessor.taskapi.ksql;
 
+import com.github.specio.taskprocessor.taskapi.ksql.topics.TaskQueue;
+import com.github.specio.taskprocessor.taskapi.ksql.topics.TaskTable;
+import com.github.specio.taskprocessor.taskapi.ksql.topics.TaskUpdates;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 
-import java.util.Map;
+import java.util.List;
 
 @Slf4j
 @Component
@@ -15,32 +18,20 @@ import java.util.Map;
 public class KsqlSchemaCreateListener implements ApplicationListener<ContextRefreshedEvent> {
     private final KsqlConnector ksqlConnector;
 
-    private final Map<String, Object> props = Map.of(
-            "auto.offset.reset", "earliest",
-            "ksql.query.pull.table.scan.enabled", "true"
-    );
+    @Value(value = "${spring.kafka.task-queue-partitions}")
+    private int partitions;
 
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
 
-        if (streamExists("UPDATES"))
-            ksqlConnector.executeQuery(KsqlClientConfiguration.CREATE_UPDATES_STREAM);
+        ksqlConnector.verifyConnection();
 
-        if (tableExists("TASKS"))
-            ksqlConnector.executeQuery(KsqlClientConfiguration.CREATE_TASKS_TABLE);
-
-        if (streamExists("TASKQUEUE"))
-            ksqlConnector.executeQuery(KsqlClientConfiguration.CREATE_TASK_QUEUE_STREAM);
-
+        List.of(
+                new TaskUpdates(partitions),
+                new TaskTable(partitions),
+                new TaskQueue(partitions)
+        ).forEach((channel) -> {
+            channel.createIfMissing(ksqlConnector);
+        });
     }
-
-    private boolean tableExists(String name) {
-        return ksqlConnector.listTables().stream().noneMatch(tableInfo -> StringUtils.equals(tableInfo.getName(), name));
-    }
-
-    private boolean streamExists(String name) {
-        return ksqlConnector.listStreams().stream().noneMatch(streamInfo -> StringUtils.equals(streamInfo.getName(), name));
-    }
-
-
 }

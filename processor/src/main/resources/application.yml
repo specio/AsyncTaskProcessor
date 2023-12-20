@@ -4,7 +4,25 @@ server:
 spring:
   kafka:
     bootstrap-servers: localhost:29092
+    task-queue-partitions: 10
     consumer:
       group-id: group_1
+    listener:
+      concurrency: 3
+---
+spring.config.activate.on-profile: docker
+
+server:
+  port: 8077
+
+spring:
+  kafka:
+    bootstrap-servers: broker:9092
+    task-queue-partitions: 10
+    producer:
+      auto-create-topics: false
+    consumer:
+      group-id: group_1
+      auto-create-topics: false
     listener:
       concurrency: 3

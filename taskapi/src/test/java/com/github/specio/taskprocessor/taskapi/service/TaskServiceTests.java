@@ -4,7 +4,7 @@ import com.github.specio.taskprocessor.taskapi.dto.TaskDto;
 import com.github.specio.taskprocessor.taskapi.dto.TaskParamsDto;
 import com.github.specio.taskprocessor.taskapi.dto.TaskResultDto;
 import com.github.specio.taskprocessor.taskapi.ksql.KsqlConnector;
-import com.github.specio.taskprocessor.taskapi.ksql.TaskTopic;
+import com.github.specio.taskprocessor.taskapi.ksql.topics.TaskTopic;
 import com.github.specio.taskprocessor.taskapi.utils.TaskApiUtils;
 import io.confluent.ksql.api.client.KsqlObject;
 import io.confluent.ksql.api.client.Row;
@@ -71,6 +71,6 @@ class TaskServiceTests {
         when(connector.getTasks()).thenReturn(expected);
 
         List<TaskDto> returnedIds = taskService.getAllTasks();
-        assertEquals(new TaskDto(id,progress,new TaskResultDto(position,typos)), returnedIds.get(0));
+        assertEquals(new TaskDto(id, progress, new TaskResultDto(position, typos)), returnedIds.get(0));
     }
 }

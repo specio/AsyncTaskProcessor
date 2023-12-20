@@ -1,22 +1,38 @@
 package com.github.specio.taskprocessor.processor.solver;
 
-import com.github.specio.taskprocessor.processor.exception.InvalidInputDataException;
 import com.github.specio.taskprocessor.processor.model.ProgressTracker;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 
 @Slf4j
-@RequiredArgsConstructor
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class PatternTypoSolver{
     private final ProgressTracker progressTracker;
     private final String input;
     private final String pattern;
 
+    /**
+     * Run sliding window of size equal to pattern, finding first best match
+     * in input with lowest hamming distance between window and pattern
+     * <p>
+     * Sends current progress via external ProgressTracker
+     *
+     * @param progressTracker Tracks progress a result of solved task
+     * @param input  Input string of size greater than pattern
+     * @param pattern  Pattern found in input string with best match
+     */
     public static void solveTask(ProgressTracker progressTracker, String input, String pattern) throws InterruptedException {
         PatternTypoSolver solver = new PatternTypoSolver(progressTracker,input,pattern);
         solver.solve();
     }
+
+    /**
+     * Run sliding window of size equal to pattern, finding first best match
+     * in input with lowest hamming distance between window and pattern
+     * <p>
+     * Sends current progress via ProgressTracker to Kafka Topic
+     */
     private void solve() throws InterruptedException {
         HammingDistance hammingDistance = new HammingDistance(progressTracker, pattern, input);
 
@@ -33,12 +49,5 @@ public class PatternTypoSolver{
                 }
             }
             progressTracker.complete(position,typos);
-    }
-
-    public static void verifyInputData(String input, String pattern) throws InvalidInputDataException {
-        if (StringUtils.isAnyBlank(input, pattern))
-            throw new InvalidInputDataException("Passed null parameter");
-        if (pattern.length() > input.length())
-            throw new InvalidInputDataException("Pattern is longer than input");
     }
 }
